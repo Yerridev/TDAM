@@ -26,7 +26,7 @@ Dentro de tu `SecondFragment`, haz lo siguiente:
 
 Agrega el siguiente plugin en el archivo `build.gradle.kts` del **nivel del proyecto** (no del módulo):
 
-```kotlin
+```java
 buildscript {
     repositories {
         google()
@@ -45,7 +45,7 @@ buildscript {
 
 Agrega el plugin de SafeArgs en la sección `plugins`:
 
-```kotlin
+```java
 plugins {
     id("androidx.navigation.safeargs")
 }
@@ -73,6 +73,77 @@ Con esta configuración, podrás:
 
 Si deseas, puedes agregar un ejemplo aquí con código de cómo pasar un string desde el `FirstFragment` y recuperarlo en el `SecondFragment`.
 
+`FirstFragment.java`
+```java
+binding.btnContinuar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = binding.txtNombre.getText().toString();
+                String inputNumber = binding.txtNumero.getText().toString();
+                if (username.isEmpty() || inputNumber.isEmpty()){
+                    Toast.makeText(requireContext(), "campos vacios", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (inputNumber.equals(numeroCadena)){
+                   FirstFragmentDirections.ActionFirstFragmentToSecondFragment action =
+                           FirstFragmentDirections.actionFirstFragmentToSecondFragment(username);
+
+                    NavHostFragment.findNavController(FirstFragment.this)
+                        .navigate(action);
+                } else {
+                    Toast.makeText(requireContext(), "Aleatorio incorrecto", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+
+```
+
+`SecondFragment.java`
+```java
+String name = SecondFragmentArgs.fromBundle(getArguments()).getUsername();
+        binding.txtUsername.setText(name);
+```
+
 ---
+
+### Comunicación co retrofit método para obtener respuesta
+```java
+private void obtenerLibros(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://yerridev.pythonanywhere.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        YCRApi ycrApi = retrofit.create(YCRApi.class);
+        Call <RptaObtenerLibros> call = ycrApi.obtenterLibros();
+        call.enqueue(new Callback<RptaObtenerLibros>() {
+            @Override
+            public void onResponse(Call<RptaObtenerLibros> call, Response<RptaObtenerLibros> response) {
+                if(!response.isSuccessful()){
+                    binding.txtLibros.setText("Codigo: " + response.code());
+                }
+                RptaObtenerLibros rptaObtenerLibros =response.body();
+                List<Libro> listaLibros =rptaObtenerLibros.getData();
+                for(Libro libro: listaLibros){
+                    String contenido = "";
+                    contenido += "id: " + String.valueOf(libro.getId()) + "\n";
+                    contenido += "nombre: " + libro.getNombre() + "\n";
+                    contenido += "isbn: " + libro.getIsbn() + "\n";
+                    binding.txtLibros.append(contenido);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RptaObtenerLibros> call, Throwable throwable) {
+
+            }
+        });
+
+    }
+```
+
+
+
 
 ¡Listo! Ahora tu proyecto está preparado para usar **SafeArgs** y comunicar datos entre `Fragments` de manera segura y estructurada.
