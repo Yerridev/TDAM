@@ -148,8 +148,9 @@ Organiza tu proyecto Android en los siguientes paquetes:
             return descripcion;  
         }  
     }
-```
-    - RptaObtenerProductos.java
+    ```
+   - RptaObtenerProductos.java
+
     ```java
     public class RptaObtenerProductos {  
           private int status;  
@@ -168,7 +169,7 @@ Organiza tu proyecto Android en los siguientes paquetes:
               return data;  
           }  
     }
-```
+    ```
 - Interface
     - APIYerri.java
     ```java
@@ -177,7 +178,7 @@ Organiza tu proyecto Android en los siguientes paquetes:
         @GET("api_obtenerProductos_ac")  
         Call<RptaObtenerProductos> obtenerProductos();  
     }
-```
+    ```
 
 
 
